@@ -1,1 +1,1 @@
-console.log('publisher')
+import 'dotenv/config'
