@@ -14,5 +14,5 @@ import { sleep } from './helpers.js'
       .catch((err) => console.error(`Message was rejected: ${err}`))
     await sleep(publisherSleep)
   }
-  process.exit(1)
+  // process.exit(1)
 })()
