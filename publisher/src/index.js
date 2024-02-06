@@ -10,8 +10,8 @@ import { sleep } from './helpers.js'
 
   for (const msg of data) {
     channelWrapper.sendToQueue(queue, msg)
-      .then(() => console.log('Message was sent'))
-      .catch((err) => console.log(`Message was rejected: ${err}`))
+      .then(() => console.log(`Message was sent: ${JSON.stringify(msg)}`))
+      .catch((err) => console.error(`Message was rejected: ${err}`))
     await sleep(publisherSleep)
   }
   process.exit(1)
