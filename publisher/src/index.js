@@ -13,10 +13,10 @@ import data from './data.js'
 
   const ch2 = await conn.createChannel()
 
-  data.map(msg => {
+  for (const msg of data) {
     setInterval(() => {
       ch2.sendToQueue(queue, Buffer.from(msg))
       console.log(`Message sended: ${msg}`)
     }, 1000)
-  })
+  }
 })()
