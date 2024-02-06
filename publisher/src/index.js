@@ -5,8 +5,9 @@ import { rabbitmq } from './config.js'
 import data from './data.js'
 
 (async () => {
-  const queue = 'tasks'
-  const conn = await amqplib.connect(rabbitmq.url)
+  const { url, queue } = rabbitmq
+
+  const conn = await amqplib.connect(url)
 
   const ch1 = await conn.createChannel()
   await ch1.assertQueue(queue)
