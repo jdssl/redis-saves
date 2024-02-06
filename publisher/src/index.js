@@ -1,23 +1,18 @@
 import 'dotenv/config'
-import amqplib from 'amqplib'
 
-import { rabbitmq } from './config.js'
+import channelWrapper from './amqp.js'
 import data from './data.js'
+import { rabbitmq } from './config.js'
+import { sleep } from './helpers.js'
 
 (async () => {
-  const { url, queue } = rabbitmq
-
-  const conn = await amqplib.connect(url)
-
-  const ch1 = await conn.createChannel()
-  await ch1.assertQueue(queue)
-
-  const ch2 = await conn.createChannel()
+  const { queue, publisherSleep } = rabbitmq
 
   for (const msg of data) {
-    setInterval(() => {
-      ch2.sendToQueue(queue, Buffer.from(msg))
-      console.log(`Message sended: ${msg}`)
-    }, 1000)
+    channelWrapper.sendToQueue(queue, msg)
+      .then(() => console.log('Message was sent'))
+      .catch((err) => console.log(`Message was rejected: ${err}`))
+    await sleep(publisherSleep)
   }
+  process.exit(1)
 })()
