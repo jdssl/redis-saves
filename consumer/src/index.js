@@ -3,12 +3,6 @@ import amqp from 'amqp-connection-manager'
 
 import { rabbitmq } from './config.js'
 
-// const onMessage = data => {
-//   const message = JSON.parse(data.content.toString())
-//   console.log('subscriber: got message', message)
-//   channelWrapper.ack(data)
-// }
-
 const { url, exchange, routingKey, queue } = rabbitmq
 
 const connection = amqp.connect(url)
