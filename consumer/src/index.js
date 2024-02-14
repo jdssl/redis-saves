@@ -12,10 +12,10 @@ connection.on('disconnect', err => console.log('Disconnected.', err.stack))
 const onMessage = (msg) => {
   try {
     console.log(' [x] Routing key: \'%s\'. Content: \'%s\' consumed', msg.fields.routingKey, msg.content.toString())
-    msg.ack()
+    channelWrapper.ack(msg)
   } catch (err) {
     console.log(`Error: ${err}`)
-    msg.ack()
+    channelWrapper.ack(msg)
   }
 }
 
