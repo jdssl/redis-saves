@@ -31,7 +31,9 @@ const channelWrapper = connection.createChannel({
   }
 })
 
-channelWrapper.waitForConnect()
-  .then(() => {
-    console.log('Listening for messages')
-  })
+(async () => {
+  channelWrapper.waitForConnect()
+    .then(() => {
+      console.log('Listening for messages')
+    })
+})()

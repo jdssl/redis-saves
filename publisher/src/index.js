@@ -26,7 +26,7 @@ const sendMessage = (msg) => {
       channelWrapper.close()
       connection.close()
     })
-};
+}
 
 (async () => {
   await sleep(publisherSleep)
