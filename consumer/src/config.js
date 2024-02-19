@@ -5,7 +5,7 @@ export const rabbitmq = {
   routingKey: process.env.ROUTING_KEY || 'create'
 }
 export const redis = {
-  host: process.env.DB_REDIS_HOST || 'redis.dev.devmuch.io',
+  host: process.env.DB_REDIS_HOST || 'localhost',
   port: process.env.DB_REDIS_PORT || 6379,
   db: process.env.DB_REDIS_DB || 7,
   ttl: { EX: Number(process.env.DB_REDIS_TTL) || 604800 }
