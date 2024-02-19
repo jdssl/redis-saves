@@ -13,7 +13,6 @@ const logger = pino({
     code_version: process.env.CODE_VERSION || 'v1.0.0'
   },
   messageKey: 'message'
-
 })
 
 const generateHashRedis = (id, suffix, prefix = 'redis-saves') => {

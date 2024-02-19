@@ -1,15 +1,15 @@
 import 'dotenv/config'
+import amqp from 'amqp-connection-manager'
 
 import data from './data.js'
 import { rabbitmq } from './config.js'
-import amqp from 'amqp-connection-manager'
-import { sleep } from './helpers.js'
+import { logger, sleep } from './helpers.js'
 
 const { url, exchange, routingKey, publisherSleep } = rabbitmq
 
 const connection = amqp.connect(url)
-connection.on('connect', () => console.log('Connected!'))
-connection.on('disconnect', err => console.log('Disconnected.', err.stack))
+connection.on('connect', () => logger.info('RabbitMQ connection established'))
+connection.on('disconnect', err => logger.info({ error: err.stack }, 'RabbitMQ disconnected'))
 
 const channelWrapper = connection.createChannel({
   json: true,
@@ -19,10 +19,10 @@ const channelWrapper = connection.createChannel({
 const sendMessage = (msg) => {
   channelWrapper.publish(exchange, routingKey, msg, { contentType: 'application/json', persistent: true })
     .then(() => {
-      console.log('Message sent:', JSON.stringify(msg))
+      logger.info({ content: JSON.parse(JSON.stringify(msg)) }, 'Message sent')
     })
     .catch(err => {
-      console.log('Message was rejected:', err.stack)
+      logger.error({ error: err.stack }, 'Message was rejected')
       channelWrapper.close()
       connection.close()
     })
