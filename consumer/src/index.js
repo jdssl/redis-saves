@@ -2,7 +2,7 @@ import 'dotenv/config'
 import amqp from 'amqp-connection-manager'
 import redis from 'redis'
 
-import { logger } from './helpers.js'
+import { generateHashRedis, getKey, logger, setKey } from './helpers.js'
 import * as config from './config.js'
 
 const clientRedis = redis.createClient({
@@ -19,12 +19,24 @@ clientRedis.on('error', (error) => {
 })
 
 const connection = amqp.connect(config.rabbitmq.url)
-connection.on('connect', () => logger.info('Connected!'))
+connection.on('connect', () => logger.info('RabbitMQ connection established'))
 connection.on('disconnect', err => logger.error('Disconnected.', err.stack))
 
-const onMessage = (msg) => {
+const onMessage = async (msg) => {
   try {
-    logger.info('[x] Routing key: \'%s\'. Content: \'%s\' consumed', msg.fields.routingKey, msg.content.toString())
+    const { id, message } = JSON.parse(msg.content.toString())
+
+    const hashRedis = generateHashRedis(id, config.rabbitmq.routingKey)
+    const hashFound = await getKey(hashRedis, clientRedis)
+
+    if (hashFound) {
+      throw new Error('This event has already been consumed!')
+    }
+
+    logger.info(`Message: ${message} consumed`)
+
+    await setKey(hashRedis, id, clientRedis, config.redis.ttl)
+
     channelWrapper.ack(msg)
   } catch (err) {
     logger.error(`Error: ${err}`)
