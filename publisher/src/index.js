@@ -28,7 +28,7 @@ const sendMessage = (msg) => {
     })
 }
 
-(async () => {
+;(async () => {
   await sleep(publisherSleep)
 
   for (const msg of data) {
