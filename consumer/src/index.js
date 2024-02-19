@@ -39,7 +39,8 @@ const onMessage = async (msg) => {
 
     channelWrapper.ack(msg)
   } catch (err) {
-    logger.error(`Error: ${err}`)
+    const content = JSON.parse(msg.content.toString())
+    logger.error({ err: err.message, content }, 'Failed to consume the message')
     channelWrapper.ack(msg)
   }
 }
