@@ -1,5 +1,6 @@
 import 'dotenv/config'
 import amqp from 'amqp-connection-manager'
+import redis from 'redis'
 
 import { rabbitmq } from './config.js'
 
