@@ -24,7 +24,7 @@ connection.on('disconnect', err => logger.error('Disconnected.', err.stack))
 
 const onMessage = (msg) => {
   try {
-    logger.info(' [x] Routing key: \'%s\'. Content: \'%s\' consumed', msg.fields.routingKey, msg.content.toString())
+    logger.info('[x] Routing key: \'%s\'. Content: \'%s\' consumed', msg.fields.routingKey, msg.content.toString())
     channelWrapper.ack(msg)
   } catch (err) {
     logger.error(`Error: ${err}`)
