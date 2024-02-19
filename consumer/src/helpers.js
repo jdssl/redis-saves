@@ -16,4 +16,24 @@ const logger = pino({
 
 })
 
-export { logger }
+const generateHashRedis = (id, suffix, prefix = 'redis-saves') => {
+  return `${prefix}:${id}:${suffix}`
+}
+
+const getKey = async (key, client) => {
+  try {
+    return client.get(key)
+  } catch (err) {
+    logger.error({ redis: { error: err } }, 'Redis GET cache failed')
+  }
+}
+
+const setKey = async (key, value, client, options) => {
+  try {
+    await client.set(key, value, options)
+  } catch (err) {
+    logger.error({ redis: { error: err } }, 'Redis SET cache failed')
+  }
+}
+
+export { logger, generateHashRedis, setKey, getKey }
