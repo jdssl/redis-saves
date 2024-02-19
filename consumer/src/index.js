@@ -1,20 +1,45 @@
 import 'dotenv/config'
 import amqp from 'amqp-connection-manager'
+import redis from 'redis'
 
-import { rabbitmq } from './config.js'
+import { generateHashRedis, getKey, logger, setKey } from './helpers.js'
+import * as config from './config.js'
 
-const { url, exchange, routingKey, queue } = rabbitmq
+const clientRedis = redis.createClient({
+  url: `redis://@${config.redis.host}:${config.redis.port}/${config.redis.db}`,
+  disableOfflineQueue: true
+})
 
-const connection = amqp.connect(url)
-connection.on('connect', () => console.log('Connected!'))
-connection.on('disconnect', err => console.log('Disconnected.', err.stack))
+clientRedis.on('ready', () => {
+  logger.info('Redis connection established')
+})
 
-const onMessage = (msg) => {
+clientRedis.on('error', (error) => {
+  logger.info({ error }, 'Redis connection failed')
+})
+
+const connection = amqp.connect(config.rabbitmq.url)
+connection.on('connect', () => logger.info('RabbitMQ connection established'))
+connection.on('disconnect', err => logger.error('Disconnected.', err.stack))
+
+const onMessage = async (msg) => {
   try {
-    console.log(' [x] Routing key: \'%s\'. Content: \'%s\' consumed', msg.fields.routingKey, msg.content.toString())
+    const { id, message } = JSON.parse(msg.content.toString())
+
+    const hashRedis = generateHashRedis(id, config.rabbitmq.routingKey)
+    const hashFound = await getKey(hashRedis, clientRedis)
+
+    if (hashFound) {
+      throw new Error('This event has already been consumed!')
+    }
+
+    logger.info(`Message: ${message} consumed`)
+
+    await setKey(hashRedis, id, clientRedis, config.redis.ttl)
+
     channelWrapper.ack(msg)
   } catch (err) {
-    console.log(`Error: ${err}`)
+    logger.error(`Error: ${err}`)
     channelWrapper.ack(msg)
   }
 }
@@ -22,16 +47,19 @@ const onMessage = (msg) => {
 const channelWrapper = connection.createChannel({
   setup: channel => {
     return Promise.all([
-      channel.assertQueue(queue, { exclusive: true, autoDelete: true }),
-      channel.assertExchange(exchange, 'topic'),
+      channel.assertQueue(config.rabbitmq.queue, { exclusive: true, autoDelete: true }),
+      channel.assertExchange(config.rabbitmq.exchange, 'topic'),
       channel.prefetch(1),
-      channel.bindQueue(queue, exchange, routingKey),
-      channel.consume(queue, onMessage)
+      channel.bindQueue(config.rabbitmq.queue, config.rabbitmq.exchange, config.rabbitmq.routingKey),
+      channel.consume(config.rabbitmq.queue, onMessage)
     ])
   }
 })
 
-channelWrapper.waitForConnect()
-  .then(() => {
-    console.log('Listening for messages')
-  })
+;(async () => {
+  await clientRedis.connect()
+  channelWrapper.waitForConnect()
+    .then(() => {
+      logger.info('Listening for messages')
+    })
+})()

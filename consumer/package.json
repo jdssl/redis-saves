@@ -25,6 +25,9 @@
   "dependencies": {
     "amqp-connection-manager": "^4.1.14",
     "amqplib": "^0.10.3",
-    "dotenv": "^16.4.1"
+    "dotenv": "^16.4.1",
+    "pino": "^8.19.0",
+    "pino-pretty": "^10.3.1",
+    "redis": "^4.6.13"
   }
 }
