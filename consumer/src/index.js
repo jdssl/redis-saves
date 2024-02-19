@@ -33,7 +33,7 @@ const onMessage = async (msg) => {
       throw new Error('This event has already been consumed!')
     }
 
-    logger.info(`Message: ${message} consumed`)
+    logger.info(`${message} consumed`)
 
     await setKey(hashRedis, id, clientRedis, config.redis.ttl)
 
