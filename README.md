@@ -1,6 +1,6 @@
 # Redis Save
 
-- Start stack with `docker-compose up` or `podman-compose up -d`.
+- Start stack with `docker-compose up -d` or `podman-compose up -d`.
 - Open two terminals and run:
   - [First Terminal]: make app-consumer
   - [Second Terminal]: make app-publisher
