@@ -1,6 +1,6 @@
 app-consumer:
-	cd ./consumer && npm run start
+	cd ./consumer && npm ci && npm run start
 
 app-publisher:
-	cd ./publisher && npm run start
+	cd ./publisher && npm ci && npm run start
 
