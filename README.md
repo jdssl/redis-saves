@@ -1,6 +1,6 @@
 <h1 align="center">Redis Saves</h1>
 
-<h4 align="center"><i>Project to exemplify how we can use Redis to avoid duplicate message consumption.</i></h4>
+<h4 align="center"><i>Project to demonstrate how Redis can be used to prevent duplicate message consumption.</i></h4>
 
 <div align="center">
     <a href="https://github.com/jdssl/redis-saves/stars"><img src="https://img.shields.io/github/stars/jdssl/redis-saves?color=e57474&labelColor=1e2528&style=for-the-badge"></a>
